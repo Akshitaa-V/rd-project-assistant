@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rd-project-assistant"
+version = "1.0.0"
+description = "AI agent tools, MCP server and workflow automation for R&D project management"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Akshitaa Vijayakumar" }]
+dependencies = [
+    "mcp>=2.2,<3",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+llm = ["litellm>=1.40"]
+dev = ["pytest>=8", "httpx>=0.27"]
+
+[project.scripts]
+rdpa = "rdpa.cli:main"
+rdpa-mcp = "rdpa.mcp_server:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,101 @@
+{
+  "name": "R&D weekly status report",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            { "field": "cronExpression", "expression": "45 7 * * 1" }
+          ]
+        }
+      },
+      "id": "5f1b2c4e-7a10-4d2b-9a77-0c9a3e1f0a01",
+      "name": "Schedule Trigger (Mon 07:45)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/webhooks/weekly-report",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": { "timeout": 60000 }
+      },
+      "id": "5f1b2c4e-7a10-4d2b-9a77-0c9a3e1f0a02",
+      "name": "Build weekly report",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "c2a7e1d0-3b44-4f0e-8d1a-6e2f9b7c1a03",
+              "leftValue": "={{ $json.has_red_projects }}",
+              "rightValue": true,
+              "operator": { "type": "boolean", "operation": "true", "singleValue": true }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5f1b2c4e-7a10-4d2b-9a77-0c9a3e1f0a03",
+      "name": "Any red projects?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [480, 0]
+    },
+    {
+      "parameters": {
+        "fromEmail": "pmo-bot@example.com",
+        "toEmail": "pmo@example.com, steering-committee@example.com",
+        "subject": "=[RED] R&D status {{ $json.report_date }}: {{ $json.summary.status_counts.red }} red project(s)",
+        "emailFormat": "text",
+        "text": "=Red projects this week:\n{{ $json.red_projects.join('\\n') }}\n\nPortfolio: {{ $json.summary.status_counts.red }} red, {{ $json.summary.status_counts.amber }} amber, {{ $json.summary.status_counts.green }} green.\nOverdue milestones: {{ $json.summary.overdue_milestones }}. High risks: {{ $json.summary.high_risks }}.\n\nFull report: {{ $json.report_path }}\n\n{{ $json.markdown }}",
+        "options": {}
+      },
+      "id": "5f1b2c4e-7a10-4d2b-9a77-0c9a3e1f0a04",
+      "name": "Email: red projects to steering",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [720, -100]
+    },
+    {
+      "parameters": {
+        "fromEmail": "pmo-bot@example.com",
+        "toEmail": "pmo@example.com",
+        "subject": "=R&D status {{ $json.report_date }}: no red projects",
+        "emailFormat": "text",
+        "text": "=Portfolio: {{ $json.summary.status_counts.amber }} amber, {{ $json.summary.status_counts.green }} green.\nOverdue milestones: {{ $json.summary.overdue_milestones }}.\n\n{{ $json.markdown }}",
+        "options": {}
+      },
+      "id": "5f1b2c4e-7a10-4d2b-9a77-0c9a3e1f0a05",
+      "name": "Email: weekly summary to PMO",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [720, 100]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger (Mon 07:45)": {
+      "main": [[{ "node": "Build weekly report", "type": "main", "index": 0 }]]
+    },
+    "Build weekly report": {
+      "main": [[{ "node": "Any red projects?", "type": "main", "index": 0 }]]
+    },
+    "Any red projects?": {
+      "main": [
+        [{ "node": "Email: red projects to steering", "type": "main", "index": 0 }],
+        [{ "node": "Email: weekly summary to PMO", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}

@@ -1,0 +1,18 @@
+[
+  {"q": "Give me an overview of the whole portfolio", "tool": "get_portfolio_status"},
+  {"q": "Which projects are red this week?", "tool": "get_portfolio_status"},
+  {"q": "How is RD-103 doing?", "tool": "get_project_status"},
+  {"q": "Status of the Radar Sensor front-end please", "tool": "get_project_status"},
+  {"q": "What is the budget burn on RD-110?", "tool": "get_project_status"},
+  {"q": "Which milestones are overdue?", "tool": "list_overdue_milestones"},
+  {"q": "Is the MCU Functional Safety library behind schedule?", "tool": "list_overdue_milestones"},
+  {"q": "Show late milestones for RD-104", "tool": "list_overdue_milestones"},
+  {"q": "What are the high risks across the portfolio?", "tool": "get_open_risks"},
+  {"q": "List open risks for RD-111", "tool": "get_open_risks"},
+  {"q": "What did the design review decide for the GaN charger?", "tool": "search_knowledge_base"},
+  {"q": "Why was copper clip bonding chosen?", "tool": "search_knowledge_base"},
+  {"q": "How do I request time in the RF chamber?", "tool": "search_knowledge_base"},
+  {"q": "What is the timesheet policy on overtime?", "tool": "search_knowledge_base"},
+  {"q": "Which mitigation was agreed for the substrate lead time?", "tool": "search_knowledge_base"},
+  {"q": "Tell me about planar transformers", "tool": "search_knowledge_base"}
+]
